@@ -62,5 +62,7 @@ Retrieval of the uploaded documents along with their extracted information and v
   - Timestamp of Upload
   - Full OCR Text
 
+<img width="948" height="487" alt="postman 2" src="https://github.com/user-attachments/assets/7c71c55f-4bba-4039-b189-a646d15de62b" />
+
 ---
 
