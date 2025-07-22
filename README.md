@@ -1,4 +1,4 @@
-#Automated Document Verification using AI
+# Automated Document Verification using AI
 
 This is an AI-powered system to verify user-uploaded documents like Aadhaar, Passport. The system is built using Django and React, with intelligent OCR extraction via Tesseract and PDF handling through Poppler. It automatically extracts key fields such as name, date of birth, and document number, and validates them.
 
