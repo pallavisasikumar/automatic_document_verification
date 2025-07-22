@@ -45,3 +45,22 @@ The endpoint was tested using **Postman**. A sample request screenshot is attach
 
 - **DELETE** `/api/documents/<int:pk>/delete/`  
   Delete a specific document by its **ID** from the system.
+
+---
+
+## Postman Collection
+
+#### Get Document Status & Extracted Data
+
+Retrieval of the uploaded documents along with their extracted information and verification status using the following API endpoint. This is helpful for viewing all documents processed by the system, including their fields and validation results.
+
+**GET** `/api/documents/`
+  Returns a list of all uploaded documents with the following details:
+  - Document Type '(aadhaar or passport)'
+  - Extracted Name, Date of Birth, and Document Number
+  - Verification Status '(Verified, Pending, Failed)'
+  - Timestamp of Upload
+  - Full OCR Text
+
+---
+
