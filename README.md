@@ -33,4 +33,20 @@ The endpoint was tested using Postman. A sample request screenshot is attached b
 
 ---
 
+### 🔗 API Endpoints
+
+- **POST `/api/upload/`**  
+  Upload a document (PDF, JPG, or PNG) with a specified document type (`aadhaar` or `passport`).  
+  The system processes it using Tesseract OCR, extracts key fields (name, DOB, document number), validates them, and stores the result.
+
+- **GET `/api/documents/`**  
+  Fetch a list of all uploaded documents along with their verification status and extracted fields.
+
+- **GET `/api/documents/<int:pk>/download/`**  
+  Download a specific uploaded document by its ID.
+
+- **DELETE `/api/documents/<int:pk>/delete/`**  
+  Delete a specific document by its ID from the system.
+
+---
 
