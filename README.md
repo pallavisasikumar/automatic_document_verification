@@ -1,6 +1,6 @@
 # Automated Document Verification using AI
 
-This is an **AI-powered Document Verification system** to verify user-uploaded documents like **Aadhaar**, **Passport**. The system is built using **Django** and **React**, with intelligent OCR extraction via **Tesseract** and PDF handling through **Poppler**. It automatically extracts key fields such as **name**, **date of birth**, and **document number**, and **validates** them.
+This is an **AI-powered Document Verification system** to verify user-uploaded documents like **Aadhaar**, **Passport**. The system is built using **Django** and **React**, with intelligent OCR extraction via **Tesseract** and PDF handling through **Poppler**. The OCR logic is implemented using the **pytesseract Python wrapper**. It automatically extracts key fields such as **name**, **date of birth**, and **document number**, and **validates** them.
 
 I have created the endpoint **`/api/upload/`** using **Django's APIView** (from **Django REST Framework**), which accepts **document uploads** along with a specified **document type**.  
 The API supports **PDF, JPG, and PNG** file formats and processes them using **Tesseract OCR**. It extracts fields such as **name**, **date of birth**, and **document number** based on the selected document type (**aadhaar** or **passport**).  
