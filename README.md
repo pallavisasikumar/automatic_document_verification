@@ -24,9 +24,9 @@ The endpoint was tested using **Postman**. A sample request screenshot is attach
   - Name format: **Alphabetic** (min 3 characters)
   - Date of Birth format: `DD/MM/YYYY`
 - **Verification Status**:
-  - ✅ **Verified** if 2 or more fields are valid  
-  - 🟡 **Pending** if only 1 field is valid  
-  - ❌ **Failed** if none are valid
+  - **Verified** if 2 or more fields are valid  
+  - **Pending** if only 1 field is valid  
+  - **Failed** if none are valid
 - **Storage**: All extracted data including **verification status**, **raw OCR text**, and **file metadata** is saved to the **database using Django ORM** for future access.
 
 ---
