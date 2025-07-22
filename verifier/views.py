@@ -16,6 +16,9 @@ import tempfile
 from datetime import datetime
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 
 # Paths
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -39,32 +42,16 @@ def extract_fields(text, doc_type):
                     fields["name"] = lines[i - 1]
                     break
 
-    elif doc_type == "pan":
-        for i, line in enumerate(lines):
-            line_lower = line.lower()
-            if not fields["document_number"]:
-                match = re.search(r"\b[A-Z]{5}\d{4}[A-Z]\b", line)
-                if match:
-                    fields["document_number"] = match.group(0)
-            if "name" in line_lower and i + 1 < len(lines):
-                possible_name = lines[i + 1].strip()
-                if len(possible_name.split()) >= 2:
-                    fields["name"] = re.sub(r"^[^A-Za-z]+", "", possible_name)
-            if "date of birth" in line_lower or "dob" in line_lower:
-                match = re.search(r"\b\d{2}[-/]\d{2}[-/]\d{4}\b", line)
-                if match:
-                    fields["dob"] = match.group(0)
-
     elif doc_type == "passport":
-        # 1. Try MRZ lines (bottom 2 lines)
+        # 1. Try MRZ lines (bottom 2-3 lines)
         for line in lines[-3:]:
             match = re.search(r"\b([A-Z0-9]{8})<", line)
             if match:
                 passport_number = match.group(1)
-                if re.match(r"[A-Z][0-9]{7}", passport_number):  # e.g., R1234567
+                if re.match(r"[A-Z][0-9]{7}", passport_number):
                     fields["document_number"] = passport_number
                     break
-                elif re.match(r"\d{8}", passport_number):  # e.g., 25937458 (fake)
+                elif re.match(r"\d{8}", passport_number):
                     fields["document_number"] = passport_number
                     break
 
@@ -99,16 +86,13 @@ def determine_status(fields, doc_type):
         except:
             return False
 
-    # Validate each field
     if fields["name"]:
-    # Name must be alphabetic (allow spaces and capitalized words)
         if re.match(r'^[A-Za-z\s]{3,}$', fields["name"].strip()):
             valid += 1
         else:
             mismatches["name"] = "Invalid format"
     else:
         mismatches["name"] = "Missing"
-
 
     if fields["dob"] and is_valid_date(fields["dob"]):
         valid += 1
@@ -123,19 +107,12 @@ def determine_status(fields, doc_type):
         else:
             mismatches["document_number"] = "Invalid Aadhaar format"
 
-    elif doc_type == "pan":
-        if doc_no and re.match(r"\b[A-Z]{5}\d{4}[A-Z]\b", doc_no):
-            valid += 1
-        else:
-            mismatches["document_number"] = "Invalid PAN format"
-
     elif doc_type == "passport":
         if doc_no and re.match(r"[A-Z]\d{7}", doc_no):
             valid += 1
         else:
             mismatches["document_number"] = "Invalid Passport format"
 
-    # Final status logic
     if valid >= 2:
         status = "Verified"
     elif valid == 1:
@@ -181,7 +158,7 @@ class FileUploadView(APIView):
                     raise Exception("Unsupported image or read error")
                 text = pytesseract.image_to_string(image)
 
-            print("✅ OCR Text:\n", text)
+            print("\u2705 OCR Text:\n", text)
             doc.extracted_text = text
 
             fields = extract_fields(text, doc_type)
@@ -194,7 +171,7 @@ class FileUploadView(APIView):
             doc.save()
 
         except Exception as e:
-            print("❌ OCR or processing error:", e)
+            print("\u274c OCR or processing error:", e)
 
         return Response({
             'status': 'uploaded',
@@ -213,11 +190,6 @@ class FileUploadView(APIView):
 class DocumentsListView(ListAPIView):
     queryset = UploadedDocument.objects.all().order_by('-uploaded_at')
     serializer_class = UploadedDocumentSerializer
-
-from django.http import FileResponse, Http404
-from django.shortcuts import get_object_or_404
-from rest_framework import status
-from rest_framework.views import APIView
 
 class DocumentDownloadView(APIView):
     def get(self, request, pk):
